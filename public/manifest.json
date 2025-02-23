@@ -1,6 +1,6 @@
 {
-  "short_name": "michinori",
-  "name": "みちのりシェアサービス",
+  "short_name": "slopy",
+  "name": "地図上の任意の2地点間の傾斜を確認するサービスです。",
   "icons": [
     {
       "src": "icon.png",

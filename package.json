@@ -1,6 +1,6 @@
 {
-  "name": "@kamataryo/michinori.kamataryo.com",
-  "description": "Web app to share your trails with image and URL.",
+  "name": "@kamataryo/slopy.kamataryo.com",
+  "description": "地図上の任意の2地点間の傾斜を確認するサービスです。",
   "private": true,
   "version": "1.0.0",
   "scripts": {
@@ -9,15 +9,13 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^5.4.8"
+    "vite": "^6.1.1"
   },
   "dependencies": {
-    "@turf/turf": "^6.3.0",
-    "canvas-toBlob": "^1.0.0",
-    "file-saver": "^2.0.5"
+    "@turf/turf": "^7.2.0"
   },
   "main": "src/index.js",
   "author": "kamataryo (https://kamataryo.com)",
   "license": "MIT",
-  "repository": "git@github.com:kamataryo/michinori.kamataryo.com.git"
+  "repository": "git@github.com:kamataryo/slopy.kamataryo.com.git"
 }

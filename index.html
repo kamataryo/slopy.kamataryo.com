@@ -16,26 +16,26 @@
     />
     <meta
       name="description"
-      content="地図上のみちのりを共有するサービスです。みちのりは画像としてダウンロードしたり、 URL として共有することができます。"
+      content="地図上の任意の2地点間の傾斜を確認するサービスです。"
     />
-    <meta property="og:url" content="https://michinori.kamataryo.com/" />
+    <meta property="og:url" content="https://slopy.kamataryo.com/" />
     <meta
       property="og:title"
-      content="みちのりシェアサービス"
+      content="Slopy"
     />
     <meta
       property="og:description"
-      content="地図上のみちのりを共有するサービスです。みちのりは画像としてダウンロードしたり、 URL として共有することができます。"
+      content="地図上の任意の2地点間の傾斜を確認するサービスです。"
     />
     <meta
       property="og:image"
-      content="https://michinori.kamataryo.com/ogp.png"
+      content="https://slopy.kamataryo.com/ogp.png"
     />
     <meta name="twitter:card" content="summary_large_image" />
     <meta property="og:type" content="website" />
-    <link rel="canonical" href="https://michinori.kamataryo.com/" />
+    <link rel="canonical" href="https://slopy.kamataryo.com/" />
 
-    <title>みちのりシェアサービス</title>
+    <title>Slopy</title>
     <script src="https://unpkg.com/maplibre-gl@^4.7.1/dist/maplibre-gl.js"></script>
     <link href="https://unpkg.com/maplibre-gl@^4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
 
@@ -45,45 +45,10 @@
   </head>
   <body>
     <header id="header">
-      <p>みちのりシェアサービス</p>
+      <p>Slopy | 地図上で傾斜を計算します</p>
     </header>
 
     <div id="map"></div>
-
-    <input id="url" type="text" />
-    <button id="done" type="button">
-      <svg
-        width="20px"
-        viewBox="0 0 105 83"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-      >
-        <g
-          id="done-icon-group"
-          stroke="none"
-          fill="none"
-          fill-rule="evenodd"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <polyline
-            id="done-icon-path"
-            stroke="#FFFFFF"
-            stroke-width="20"
-            points="9.98847236 28 34.0888718 72.6188782 94.8539787 10.4063859"
-          ></polyline>
-        </g>
-      </svg>
-    </button>
-    <div id="wizard-trail" class="wizard">みちのりを作成</div>
-    <div id="wizard-switch" class="wizard">標高表示の変更</div>
-    <div id="wizard-download" class="wizard">地図をダウンロード</div>
-    <div id="wizard-copy" class="wizard">共有</div>
-    <div id="wizard-copied" class="wizard">
-      共有URLをクリップボードにコピーしました！
-    </div>
-
     <script type="module" src="./src/index.js"></script>
   </body>
 </html>

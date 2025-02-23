@@ -1,9 +1,9 @@
-# michinori.kamataryo.com
+# slopy.kamataryo.com
 
 ## Development
 
 ```
-$ git clone git@github.com:kamataryo/michinori.kamataryo.com.git
-$ cd michinori.kamataryo.com
+$ git clone git@github.com:kamataryo/slopy.kamataryo.com.git
+$ cd slopy.kamataryo.com
 $ npm run dev
 ```
