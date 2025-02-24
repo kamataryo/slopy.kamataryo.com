@@ -5,6 +5,10 @@ MapboxDraw.constants.classes.CONTROL_BASE  = 'maplibregl-ctrl';
 MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
 
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+const inputMethodIndicator = document.querySelector('.input-method-indicator');
+inputMethodIndicator.innerHTML = isTouchDevice ? 'タップ' : 'クリック';
+
 const map = new maplibregl.Map({
   container: "map",
   center: [139.7690, 35.6804],
@@ -27,6 +31,7 @@ const map = new maplibregl.Map({
 // });
 
 map.addControl(new maplibregl.NavigationControl());
+map.addControl(new maplibregl.GeolocateControl());
 map.addControl(new maplibregl.ScaleControl());
 // map.addControl(draw, "top-right");
 
