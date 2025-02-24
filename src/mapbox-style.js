@@ -8,7 +8,8 @@ export const getStyle = () => {
         type: 'raster',
         tiles: ['https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'],
         tileSize: 128,
-        attribution: '国土地理院 標準地図'
+        attribution: '国土地理院 標準地図',
+        maxzoom: 18,
       },
       // 'gsi-photo': {
       //   type: 'raster',
@@ -27,7 +28,7 @@ export const getStyle = () => {
         'type': 'raster',
         'source': 'gsi-std',
         'minzoom': 0,
-        'maxzoom': 22,
+        'maxzoom': 15,
       },
       // {
       //   'id': 'gsi-photo',
@@ -58,38 +59,45 @@ export const getStyle = () => {
   }
 }
 
-
-export const drawStyles = [
-  {
-    id: "gl-draw-line-inactive",
-    type: "line",
-    filter: [
-      "all",
-      ["==", "active", "false"],
-      ["==", "$type", "LineString"],
-      ["!=", "mode", "static"],
-    ],
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
-    paint: {
-      "line-color": "#e74230",
-      "line-width": 2,
-    },
+export const slopeLayer = {
+  id: 'slope',
+  source: 'slope',
+  type: 'line',
+  layout: {
+    visibility: 'visible',
   },
-  {
-    id: "gl-draw-line-active",
-    type: "line",
-    filter: ["all", ["==", "$type", "LineString"], ["==", "active", "true"]],
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
-    paint: {
-      "line-color": "#e74230",
-      "line-dasharray": [0.2, 2],
-      "line-width": 2,
-    },
+  paint: {
+    'line-color': 'red',
+    'line-width': 5,
+  }
+}
+export const slopeEndLayer = {
+  id: 'slope-end',
+  source: 'slope',
+  type: 'circle',
+  filter: ['==', ['get', 'type'], 'both_end'],
+  layout: {
+    visibility: 'visible',
   },
-];
+  paint: {
+    'circle-color': 'red',
+    'circle-radius': 5,
+  }
+}
+export const slopeTextLayer = {
+  id: 'slope-text',
+  source: 'slope', // TODO: slope-text とするとなぜか表示されない
+  type: 'symbol',
+  layout: {
+    'text-field': ['get', 'label'],
+    'text-size': 16,
+    'text-offset': [0, 1],
+    "text-variable-anchor": ["bottom", "top", "left", "right"], // TODO
+    "text-allow-overlap": false,
+  },
+  paint: {
+    'text-color': 'red',
+    'text-halo-color': 'white',
+    'text-halo-width': 4,
+  }
+}

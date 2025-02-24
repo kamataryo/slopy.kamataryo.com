@@ -6,6 +6,7 @@ export const createSourceData = async (start, end) => {
   let startPointFeature = null
   let endPointFeature = null
   let lineFeature = null
+  let midPointFeature = null
 
   const [startElevation, endElevation] = (start && end) ? await Promise.all([
     getElevation(start[0], start[1]),
@@ -16,7 +17,7 @@ export const createSourceData = async (start, end) => {
     startPointFeature = {
       type: 'Feature',
       properties: {
-        type: 'start',
+        type: 'both_end',
         elevation: startElevation,
       },
       geometry: {
@@ -30,7 +31,7 @@ export const createSourceData = async (start, end) => {
     endPointFeature = {
       type: 'Feature',
       properties: {
-        type: 'end',
+        type: 'both_end',
         elevation: endElevation,
       },
       geometry: {
@@ -41,18 +42,42 @@ export const createSourceData = async (start, end) => {
   }
 
   if(start && end) {
+
+    midPointFeature = {
+      type: 'Feature',
+      properties: {
+        type: 'mid',
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: turf.midpoint(turf.point(start), turf.point(end)).geometry.coordinates,
+      }
+    }
+
     const distance = turf.distance(turf.point(start), turf.point(end), 'kilometers') * 1000
     const elevationChange = endPointFeature.properties.elevation - startPointFeature.properties.elevation
-    const slope = elevationChange / distance
-    const degree = Math.atan(slope) * 180 / Math.PI
+    const degree = Math.atan(elevationChange / distance) * 180 / Math.PI
+
+    let distance_label
+    if(distance < 1000) {
+      distance_label = `${distance.toFixed(0).toLocaleString()} m`
+    } else if(distance < 100000) {
+      distance_label = `${(distance / 1000).toFixed(2).toLocaleString()} km`
+    } else {
+      distance_label = `${(distance / 1000).toFixed(1).toLocaleString()} km`
+    }
+
+    const elevationChange_label = `${elevationChange > 0 ? '+' : ''}${elevationChange.toFixed(0).toLocaleString()} m`
+
+    const slope_label = Number.isNaN(degree) ? '-' : `${degree.toFixed(0).toLocaleString()}°`
+
     lineFeature = {
       type: "Feature",
       properties: {
-        distance: `距離: ${Math.round(100 * distance) / 100}m`,
-        elevationChange: `高度差 ${Math.round(100 * elevationChange) / 100}`,
-        slope: Math.round(100 * slope) / 100,
-        degree: `傾斜: ${Math.round(100 * degree) / 100}°`,
-        label: `傾斜: ${Number.isNaN(degree) ? '-' : Math.round(degree)}°\n(距離: ${Math.round(distance)}m)`
+        distance,
+        elevationChange,
+        degree,
+        label: `傾斜: ${slope_label}\n高度差: ${elevationChange_label}\n水平距離: ${distance_label}`
       },
       geometry: {
         type: "LineString",
@@ -61,7 +86,7 @@ export const createSourceData = async (start, end) => {
     }
   }
 
-  const slopeData = {
+  const slopeSourceData = {
     type: "FeatureCollection",
     features: [
       startPointFeature,
@@ -70,7 +95,14 @@ export const createSourceData = async (start, end) => {
     ].filter(x => !!x)
   }
 
-  return slopeData
+  const textSourceData = {
+    type: "FeatureCollection",
+    features: [
+      midPointFeature,
+    ].filter(x => !!x)
+  }
+
+  return { slopeSourceData, textSourceData }
 }
 
 

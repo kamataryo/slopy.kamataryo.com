@@ -1,11 +1,9 @@
-import { drawStyles, getStyle } from "./mapbox-style";
+import { getStyle } from "./mapbox-style";
 import { createSourceData } from './source'
-
-MapboxDraw.constants.classes.CONTROL_BASE  = 'maplibregl-ctrl';
-MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
-MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
+import { slopeLayer, slopeEndLayer, slopeTextLayer } from './mapbox-style'
 
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
 const inputMethodIndicator = document.querySelector('.input-method-indicator');
 inputMethodIndicator.innerHTML = isTouchDevice ? 'タップ' : 'クリック';
 
@@ -15,95 +13,58 @@ const map = new maplibregl.Map({
   zoom: 10,
   style: getStyle(),
   hash: true,
-  localIdeographFontFamily: '"Noto Sans Regular", sans-serif',
-
+  localIdeographFontFamily: 'sans-serif',
+  minZoom: 4.5,
+  maxZoom: 14.9,
 });
-
-// const draw = new MapboxDraw({
-//   controls: {
-//     point: false,
-//     polygon: false,
-//     combine_features: false,
-//     uncombine_features: false,
-//     trash: false,
-//   },
-//   styles: drawStyles,
-// });
 
 map.addControl(new maplibregl.NavigationControl());
 map.addControl(new maplibregl.GeolocateControl());
 map.addControl(new maplibregl.ScaleControl());
-// map.addControl(draw, "top-right");
 
 map.on("load", async () => {
 
-  const start = [ 36.16931477063946, 23.71245824599066]
-  const end = [ 24.004432163632345, 21.16264451062996 ]
-  const slopeData = await createSourceData(start, end)
+  const { slopeSourceData, textSourceData } = await createSourceData(null, null)
 
-  const slopeLayer = {
-    id: 'slope',
-    source: 'slope',
-    type: 'line',
-    layout: {
-      visibility: 'visible',
-    },
-    paint: {
-      'line-color': 'red',
-      'line-width': 5,
-    }
-  }
-  const slopeEndLayer = {
-    id: 'slope-end',
-    source: 'slope',
-    type: 'circle',
-    layout: {
-      visibility: 'visible',
-    },
-    paint: {
-      'circle-color': 'red',
-      'circle-radius': 5,
-    }
-  }
-  const slopeTextLayer = {
-    id: 'slope-text',
-    source: 'slope',
-    type: 'symbol',
-    layout: {
-      'text-field': ['get', 'label'],
-      'text-size': 16,
-      'text-offset': [0, 1],
-      "text-variable-anchor": ["bottom", "top"],
-      "text-allow-overlap": false,
-    },
-    paint: {
-      'text-color': 'red',
-      'text-halo-color': 'white',
-      'text-halo-width': 4,
-    }
-  }
-
-  map.addSource('slope', { type: 'geojson', data: slopeData })
+  map.addSource('slope', { type: 'geojson', data: slopeSourceData })
+  map.addSource('slope-text', { type: 'geojson', data: textSourceData })
   map.addLayer(slopeLayer)
   map.addLayer(slopeEndLayer)
   map.addLayer(slopeTextLayer)
 
+  let disableClick = false
 
   map.on('click', async (e) => {
+    if(disableClick) return
+
     const { lng, lat } = e.lngLat
     const point = [lng, lat]
-    const source = e.target.getSource('slope')
-    const data = await source.getData()
-    const featureCount = data.features.length
+    const slopeSource = e.target.getSource('slope')
+    const slopeTextSource = e.target.getSource('slope-text')
+
+    const slopeData = await slopeSource.getData()
+    const featureCount = slopeData.features.length
 
     let nextData
     if(featureCount >= 3 || featureCount <= 0) {
+      // この際 async 処理無しの ghost promise となっている
       nextData = await createSourceData(point, null)
     } else if(featureCount === 1) {
-      const existingPoint = data.features[0].geometry.coordinates
-      nextData = await createSourceData(existingPoint, point)
+      disableClick = true
+      const canvas = document.getElementById('map').querySelector('canvas')
+      const prevCursor = canvas.style.cursor
+    try {
+        canvas.style.cursor = 'wait'
+        const existingPoint = slopeData.features[0].geometry.coordinates
+        nextData = await createSourceData(existingPoint, point)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        canvas.style.cursor = prevCursor
+        disableClick = false
+      }
     }
-
-    source.setData(nextData)
+    slopeSource.setData(nextData.slopeSourceData)
+    slopeTextSource.setData(nextData.textSourceData)
   })
 });
