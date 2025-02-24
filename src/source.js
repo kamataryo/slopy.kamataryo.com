@@ -7,12 +7,17 @@ export const createSourceData = async (start, end) => {
   let endPointFeature = null
   let lineFeature = null
 
+  const [startElevation, endElevation] = (start && end) ? await Promise.all([
+    getElevation(start[0], start[1]),
+    getElevation(end[0], end[1]),
+  ]) : [null, null]
+
   if(start) {
     startPointFeature = {
       type: 'Feature',
       properties: {
         type: 'start',
-        elevation: await getElevation(start[0], start[1]),
+        elevation: startElevation,
       },
       geometry: {
         type: 'Point',
@@ -26,7 +31,7 @@ export const createSourceData = async (start, end) => {
       type: 'Feature',
       properties: {
         type: 'end',
-        elevation: await getElevation(end[0], end[1])
+        elevation: endElevation,
       },
       geometry: {
         type: 'Point',
