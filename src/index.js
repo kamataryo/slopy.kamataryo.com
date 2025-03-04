@@ -15,8 +15,9 @@ const map = new maplibregl.Map({
   hash: true,
   localIdeographFontFamily: 'sans-serif',
   minZoom: 4.5,
-  maxZoom: 14.9,
+  maxZoom: 16.9,
 });
+window.__slopy_map = map
 
 map.addControl(new maplibregl.NavigationControl());
 map.addControl(new maplibregl.GeolocateControl());
@@ -33,6 +34,8 @@ map.on("load", async () => {
   map.addLayer(slopeTextLayer)
 
   let disableClick = false
+  const canvas = map.getCanvas()
+  const defaultCursor = canvas.style.cursor
 
   map.on('click', async (e) => {
     if(disableClick) return
@@ -46,13 +49,11 @@ map.on("load", async () => {
     const featureCount = slopeData.features.length
 
     let nextData
-    if(featureCount >= 3 || featureCount <= 0) {
+    if(featureCount === 0) {
       // この際 async 処理無しの ghost promise となっている
       nextData = await createSourceData(point, null)
     } else if(featureCount === 1) {
       disableClick = true
-      const canvas = document.getElementById('map').querySelector('canvas')
-      const prevCursor = canvas.style.cursor
     try {
         canvas.style.cursor = 'wait'
         const existingPoint = slopeData.features[0].geometry.coordinates
@@ -60,9 +61,12 @@ map.on("load", async () => {
       } catch (error) {
         console.error(error)
       } finally {
-        canvas.style.cursor = prevCursor
+        canvas.style.cursor = 'default'
         disableClick = false
       }
+    } else {
+      canvas.style.cursor = defaultCursor
+      nextData = await createSourceData(null, null)
     }
     slopeSource.setData(nextData.slopeSourceData)
     slopeTextSource.setData(nextData.textSourceData)

@@ -28,7 +28,7 @@ export const getStyle = () => {
         'type': 'raster',
         'source': 'gsi-std',
         'minzoom': 0,
-        'maxzoom': 15,
+        'maxzoom': 18,
       },
       // {
       //   'id': 'gsi-photo',
@@ -80,8 +80,8 @@ export const slopeEndLayer = {
     visibility: 'visible',
   },
   paint: {
-    'circle-color': 'red',
-    'circle-radius': 5,
+    'circle-color': 'crimson',
+    'circle-radius': 6,
   }
 }
 export const slopeTextLayer = {
@@ -91,9 +91,9 @@ export const slopeTextLayer = {
   layout: {
     'text-field': ['get', 'label'],
     'text-size': 16,
-    'text-offset': [0, 1],
-    "text-variable-anchor": ["bottom", "top", "left", "right"], // TODO
-    "text-allow-overlap": false,
+    'text-offset': [2, 2],
+    "text-variable-anchor": ["top", "right", "bottom", "right", "bottom-left", "bottom-right"], // TODO
+    "text-allow-overlap": true,
   },
   paint: {
     'text-color': 'red',
